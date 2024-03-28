@@ -1,0 +1,12 @@
+<div role="search">
+  <div class="input-group">
+    <input #myInput type="search"
+           placeholder="Search a product" class="form-control"
+    (keyup.enter)="search(myInput.value)" />
+
+    <button class="btn bg-white" type="submit"
+      (click)="search(myInput.value)">
+      <i class="fa fa-search"></i>
+    </button>
+  </div>
+</div>

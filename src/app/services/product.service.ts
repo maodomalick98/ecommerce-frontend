@@ -1,26 +1,72 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
 import {Product} from "../common/product";
+import {ProductCategory} from "../common/product-category";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
 
-  private baseUrl = 'http://localhost:8080/api/products'
+  private baseUrl: string = 'http://localhost:8080/api'
 
-  constructor(private httpClient: HttpClient ) { }
+  constructor(private httpClient: HttpClient) {
+  }
 
-  getProductsLists(categoryId : number) : Observable<Product[]> {
-    return this.httpClient.get<GetResponse>(`${this.baseUrl}/search/findByCategoryId?id=${categoryId}`).pipe(
+  getProductsListPaginate(categoryId: number, page: number, pageSize: number): Observable<ResponseProducts> {
+    const url = `${this.baseUrl}/products/search/findByCategoryId?id=${categoryId}&page=${page}&size=${pageSize}`;
+    return this.httpClient.get<ResponseProducts>(url);
+  }
+
+  getProductsList(categoryId: number): Observable<Product[]> {
+    const url = `${this.baseUrl}/products/search/findByCategoryId?id=${categoryId}`;
+    return this.getProducts(url);
+  }
+
+  private getProducts(url: string) {
+    return this.httpClient.get<ResponseProducts>(url).pipe(
       map(response => response._embedded.products)
     )
   }
+
+  getCategories(): Observable<ProductCategory[]> {
+    const url = `${this.baseUrl}/categories`;
+    return this.httpClient.get<ResponseCategory>(url).pipe(
+      map(response => response._embedded.productsCategory)
+    );
+  }
+
+  searchProductsPaginate(keyWord: string, page: number, pageSize: number): Observable<ResponseProducts> {
+    const url = `${this.baseUrl}/products/search/findByNameContaining?name=${keyWord}&page=${page}&size=${pageSize}`;
+    return this.httpClient.get<ResponseProducts>(url);
+  }
+
+  searchProducts(keyWord: string): Observable<Product[]> {
+    const url = `${this.baseUrl}/products/search/findByNameContaining?name=${keyWord}`;
+    return this.getProducts(url);
+  }
+
+  getProduct(productId: number) {
+    const url = `${this.baseUrl}/products/${productId}`
+    return this.httpClient.get<Product>(url);
+  }
 }
 
-interface GetResponse {
-  _embedded : {
+interface ResponseProducts {
+  _embedded: {
     products: Product[]
+  },
+  page: {
+    size: number,
+    totalElements: number,
+    totalPages: number,
+    number: number
+  }
+}
+
+interface ResponseCategory {
+  _embedded: {
+    productsCategory: ProductCategory[]
   }
 }

@@ -1,12 +1,15 @@
 <div class="col-md-5 col-sm-5 col-lg-8">
-  <div class="card mb-30"><a class="card-img-tiles" href="#" data-abc="true">
-    <div class="inner">
-      <div class="main-img" ><img src="{{ imageUrl }}" class="img-responsive"></div>
-    </div>
-  </a>
+  <div class="card mb-30">
+    <a class="card-img-titles" href="#" data-abc="true">
+      <div class="inner">
+        <div class="main-img"><a routerLink="/products/{{ id }}"><img src="{{ imageUrl }}" class="img-responsive"></a>
+        </div>
+      </div>
+    </a>
     <div class="card-body text-center">
       <h6>{{name}}</h6>
-      <p class="text-muted">Starting from {{price | currency: 'USD'  }}</p><a class="btn btn-outline-primary btn-sm" href="#" data-abc="true">Ajouter</a>
+      <p class="text-muted">{{price | currency: 'USD'}}</p><a class="btn btn-outline-primary btn-sm" href="#"
+                                                              data-abc="true">Add</a>
     </div>
   </div>
 </div>

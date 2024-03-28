@@ -6,6 +6,7 @@ import {Component, Input, OnInit} from '@angular/core';
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent implements OnInit {
+  @Input() id : number = 0;
   @Input() name = "";
   @Input() imageUrl = "";
   @Input() price = "";
