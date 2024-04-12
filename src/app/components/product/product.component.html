@@ -2,14 +2,17 @@
   <div class="card mb-30">
     <a class="card-img-titles" href="#" data-abc="true">
       <div class="inner">
-        <div class="main-img"><a routerLink="/products/{{ id }}"><img src="{{ imageUrl }}" class="img-responsive"></a>
+        <div class="main-img"><a routerLink="/products/{{ product.id }}"><img src="{{ product.imageUrl }}"
+                                                                              class="img-responsive"></a>
         </div>
       </div>
     </a>
     <div class="card-body text-center">
-      <h6>{{name}}</h6>
-      <p class="text-muted">{{price | currency: 'USD'}}</p><a class="btn btn-outline-primary btn-sm" href="#"
-                                                              data-abc="true">Add</a>
+      <h6>{{product.name}}</h6>
+      <p class="text-muted">{{product.unitPrice| currency: 'USD'}}</p>
+      <button (click)="addToCart(product)" class="btn btn-outline-primary btn-sm" href="#"
+              data-abc="true">Add
+      </button>
     </div>
   </div>
 </div>

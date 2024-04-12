@@ -3,8 +3,7 @@
   <div class="container-fluid">
     <div class="row">
       <div *ngFor="let product of products" class="col-md-3 col-sm-1">
-        <app-product [id]="product.id" [name]="product.name" [imageUrl]="product.imageUrl"
-                     [price]="product.unitPrice"></app-product>
+        <app-product [product]="product"></app-product>
       </div>
     </div>
 
