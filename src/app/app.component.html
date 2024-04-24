@@ -3,25 +3,15 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-2 my-auto d-none d-sm-none d-md-block d-lg-block">
-          <h5 class="brand-name">MyCommerce</h5>
+          <h5 class="brand-name" routerLink="/">MyCommerce</h5>
         </div>
         <div class="col-md-5 my-auto">
           <app-search></app-search>
         </div>
         <div class="col-md-5 my-auto">
           <ul class="nav justify-content-end">
-
             <app-card-status></app-card-status>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <i class="fa fa-heart"></i> Wishlist (0)
-              </a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link" href="#" id="navbarDropdown" role="button">
-                <i class="fa fa-user"></i> Se connecter
-              </a>
-            </li>
+            <app-login-status></app-login-status>
           </ul>
         </div>
       </div>

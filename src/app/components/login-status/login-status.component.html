@@ -1,0 +1,17 @@
+<li *ngIf="!isAuthenticated" class="nav-item dropdown">
+  <a class="nav-link connexion-button" routerLink="/login" role="button">
+    <i class="fa fa-user"></i> Se connecter
+  </a>
+</li>
+<li *ngIf="isAuthenticated" class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle connexion-button" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+     aria-expanded="false">
+    <i class="fa fa-user"></i> {{ userName }}
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+    <li><a class="dropdown-item" href="#"><i class="fa fa-user"></i> Profile</a></li>
+    <li><a class="dropdown-item" href="#"><i class="fa fa-list"></i> My Orders</a></li>
+    <li><a class="dropdown-item" (click)="logout()"><i class="fa fa-sign-out"></i> Logout</a></li>
+  </ul>
+</li>
+

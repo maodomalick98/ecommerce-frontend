@@ -1,23 +1,41 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {Injector, NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import { AppComponent } from './app.component';
-import { ProductListComponent } from './components/product-list/product-list.component';
+import {AppComponent} from './app.component';
+import {ProductListComponent} from './components/product-list/product-list.component';
 import {HttpClientModule} from "@angular/common/http";
 import {ProductService} from "./services/product.service";
-import { ProductComponent } from './components/product/product.component';
-import {RouterModule, Routes} from "@angular/router";
-import { ProductCategoryMenuComponent } from './components/product-category-menu/product-category-menu.component';
-import { SearchComponent } from './components/search/search.component';
-import { ProductsDetailsComponent } from './components/products-details/products-details.component';
+import {ProductComponent} from './components/product/product.component';
+import {Router, RouterModule, Routes} from "@angular/router";
+import {ProductCategoryMenuComponent} from './components/product-category-menu/product-category-menu.component';
+import {SearchComponent} from './components/search/search.component';
+import {ProductsDetailsComponent} from './components/products-details/products-details.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import { CardStatusComponent } from './components/card-status/card-status.component';
+import {CardStatusComponent} from './components/card-status/card-status.component';
 import {NgOptimizedImage} from "@angular/common";
-import { CartDetailsComponent } from './components/cart-details/cart-details.component';
-import { CheckoutComponent } from './components/checkout/checkout.component';
+import {CartDetailsComponent} from './components/cart-details/cart-details.component';
+import {CheckoutComponent} from './components/checkout/checkout.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import {LoginComponent} from './components/login/login.component';
+import {LoginStatusComponent} from './components/login-status/login-status.component';
+import {OKTA_CONFIG, OktaAuthGuard, OktaAuthModule, OktaCallbackComponent} from "@okta/okta-angular";
+import {OktaAuth} from "@okta/okta-auth-js";
+import oktaConfig from "./config/okta-config";
+
+const oktaAuth: OktaAuth = new OktaAuth(oktaConfig.openId);
+function sendToLoginPage(oktaAuth: OktaAuth, injector: Injector) {
+  const router: Router = injector.get(Router);
+  router.navigate(['/login']);
+}
 
 const routes: Routes = [
+  /* {path: 'login/callback', component: OktaCallbackComponent, canActivate: [OktaAuthGuard],
+            data: {onAuthRequired: sendToLoginPage}
+  }, */
+
+  {path: 'login/callback', component: OktaCallbackComponent},
+  {path: 'login', component: LoginComponent},
+
   {path: 'category/:id/:name', component: ProductListComponent},
   {path: 'search/:keyword', component: ProductListComponent},
   {path: 'category/', component: ProductListComponent},
@@ -25,7 +43,7 @@ const routes: Routes = [
   {path: 'products/:id', component: ProductsDetailsComponent},
   {path: 'cart-details', component: CartDetailsComponent},
   {path: 'checkout', component: CheckoutComponent},
-  {path: '', redirectTo: '/products', pathMatch : 'full'},
+  {path: '', redirectTo: '/products', pathMatch: 'full'},
   {path: '**', redirectTo: '/products', pathMatch: 'full'}
 ]
 
@@ -39,17 +57,21 @@ const routes: Routes = [
     ProductsDetailsComponent,
     CardStatusComponent,
     CartDetailsComponent,
-    CheckoutComponent
+    CheckoutComponent,
+    LoginComponent,
+    LoginStatusComponent
   ],
-    imports: [
-        BrowserModule,
-        HttpClientModule,
-        RouterModule.forRoot(routes),
-        NgbModule,
-        NgOptimizedImage,
-        ReactiveFormsModule
-    ],
-  providers: [ProductService],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    RouterModule.forRoot(routes),
+    NgbModule,
+    NgOptimizedImage,
+    ReactiveFormsModule,
+    OktaAuthModule
+  ],
+  providers: [ProductService, {provide: OKTA_CONFIG, useValue: {oktaAuth}}],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
