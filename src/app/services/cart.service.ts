@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {CartItem} from "../models/cart-item";
 import {BehaviorSubject, Subject} from "rxjs";
-import {FormControl, Validators} from "@angular/forms";
-import {WitheSpaceValidator} from "../validators/witheSpaceValidator";
 
 @Injectable({
     providedIn: 'root'
