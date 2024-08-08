@@ -4,13 +4,15 @@ import {Country} from "../models/country";
 import {HttpClient} from "@angular/common/http";
 import {State} from "../models/state";
 import {Purchase} from "../models/purchase";
+import {environment} from "../../environments/environment";
+import {PaymentInfo} from "../models/payment-info";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CheckoutService {
 
-  private baseUrl: string = "http://localhost:8080/api";
+  private baseUrl: string = environment.eCommerceApiBaseUrl;
   constructor(private httpClient: HttpClient) { }
 
   getCountries(): Observable<Country[]> {
@@ -29,6 +31,11 @@ export class CheckoutService {
   placeOrder(purchase: Purchase) : Observable<any> {
     const url = `${this.baseUrl}/checkout/purchase`;
     return this.httpClient.post<Purchase>(url, purchase)
+  }
+
+  createPaymentIntent(paymentInfo: PaymentInfo) : Observable<any> {
+    const url = `${this.baseUrl}/checkout/payment-intent`;
+    return this.httpClient.post<PaymentInfo>(url, paymentInfo)
   }
 }
 

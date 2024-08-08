@@ -12,7 +12,7 @@ export class CartService {
     cartItems: CartItem[] = [];
     storage: Storage = localStorage;
 
-    totalPrice: Subject<number> = new Subject<number>();
+    totalPrice: Subject<number> = new BehaviorSubject<number>(0);
     totalQuantity: Subject<number> = new BehaviorSubject<number>(0);
 
     constructor() {
@@ -64,4 +64,8 @@ export class CartService {
         }
         this.computeCartTotals();
     }
+
+  persistCartItems() {
+    this.storage.setItem('cartItems', JSON.stringify(this.cartItems));
+  }
 }

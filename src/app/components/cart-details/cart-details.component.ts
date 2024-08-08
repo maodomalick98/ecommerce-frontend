@@ -102,12 +102,6 @@ export class CartDetailsComponent implements OnInit {
   }
 
   submit() {
-    this.creditCardService.creditCardData.next(this.creditCardFrom.get('creditCard')?.value);
     this.router.navigateByUrl(`checkout`);
-    if (this.creditCardFrom.invalid) {
-      this.creditCardFrom.markAllAsTouched();
-    } else {
-      this.router.navigateByUrl(`checkout`);
-    }
   }
 }

@@ -3,13 +3,14 @@ import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
 import {Product} from "../models/product";
 import {ProductCategory} from "../models/product-category";
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
 
-  private baseUrl: string = 'http://localhost:8080/api'
+  private baseUrl: string = environment.eCommerceApiBaseUrl;
 
   constructor(private httpClient: HttpClient) {
   }

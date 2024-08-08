@@ -9,6 +9,8 @@ import {Order} from "../../models/order";
 import {CartService} from "../../services/cart.service";
 import {OrderItem} from "../../models/order-item";
 import {Purchase} from "../../models/purchase";
+import {environment} from "../../../environments/environment";
+import {PaymentInfo} from "../../models/payment-info";
 
 @Component({
   selector: 'app-checkout',
@@ -24,7 +26,11 @@ export class CheckoutComponent implements OnInit {
   totalQuantity: number = 0;
   totalPrice: number = 0;
 
+  stripe = Stripe(environment.stipePublishableKey);
+  cardFields: any;
+  cardErrors: any;
   storage: Storage = sessionStorage;
+  isDisabled: boolean = false;
 
   constructor(private formBuilder: FormBuilder, private checkoutService: CheckoutService,
               private router: Router, private cartService: CartService) {
@@ -74,20 +80,16 @@ export class CheckoutComponent implements OnInit {
             WitheSpaceValidator.notOnlyWithespace
           ])
       }),
-      creditCard: this.formBuilder.group({
-        cardType: [''],
-        name: [''],
-        number: [''],
-        cvv: [''],
-        expiration: ['']
-      })
+      creditCard: this.formBuilder.group({})
     })
   }
 
   ngOnInit(): void {
+    this.getCartDetails();
     this.checkoutService.getCountries().subscribe(
       data => this.countries = data
     );
+    this.setupStripeForm();
   }
 
   get firstName() {
@@ -171,6 +173,7 @@ export class CheckoutComponent implements OnInit {
 
   resetCart() {
     this.cartService.cartItems = [];
+    this.cartService.persistCartItems();
     this.cartService.totalPrice.next(0);
     this.cartService.totalQuantity.next(0);
     this.checkoutFormGroup.reset();
@@ -200,17 +203,79 @@ export class CheckoutComponent implements OnInit {
 
     let purchase = new Purchase(customer, shippingAddress, billingAddress, order, orderItems);
 
-    console.log(purchase);
-    this.checkoutService.placeOrder(purchase).subscribe({
-        next: response => {
-          alert(`Your order has been received.\n Order tracking number: ${response.orderTrackingNumber}`)
-          this.resetCart();
-          this.router.navigateByUrl('/products');
-        },
-        error: () => {
-          alert(`An error Occured. Try again later`);
+    const paymentInfo = new PaymentInfo();
+    paymentInfo.amount = Math.round(this.totalPrice * 100);
+    paymentInfo.currency = "USD";
+    paymentInfo.receiptEmail = purchase.customer.email;
+
+    if (!this.checkoutFormGroup.invalid && this.cardErrors.textContent === "") {
+      this.isDisabled = true;
+      this.checkoutService.createPaymentIntent(paymentInfo).subscribe(
+        (paymentIntentResponse) => {
+          this.stripe.confirmCardPayment(paymentIntentResponse.client_secret, {
+              payment_method:
+                {
+                  card: this.cardFields,
+                  billing_details: {
+                    email: purchase.customer.email,
+                    name: `${purchase.customer.lastName} ${purchase.customer.firstName}`,
+                    address: {
+                      line1: purchase.billingAddress.street,
+                      city: purchase.billingAddress.city,
+                      state: purchase.billingAddress.state,
+                      postal_code: purchase.billingAddress.zipCode,
+                      country: this.billingAddressCountry.value.code
+                    }
+                  }
+                },
+            }, {handleActions: false}
+          ).then((result: any) => {
+            if (result.error) {
+              alert(`There was en error: ${result.error.message}`)
+              this.isDisabled = false;
+            } else {
+              this.checkoutService.placeOrder(purchase).subscribe({
+                next: response => {
+                  alert(`Your order has been received.\n Order tracking number: ${response.orderTrackingNumber}`)
+                  this.resetCart();
+                  this.isDisabled = false;
+                  this.router.navigateByUrl('/products');
+                },
+                error: () => {
+                  alert(`An error Occured. Try again later`);
+                  this.isDisabled = false;
+                }
+              });
+            }
+          });
         }
+      )
+    } else {
+      this.checkoutFormGroup.markAllAsTouched();
+    }
+  }
+
+  getCartDetails() {
+    this.cartService.totalQuantity.subscribe(
+      totalQuantity => this.totalQuantity = totalQuantity
+    );
+
+    this.cartService.totalPrice.subscribe(data => {
+      this.totalPrice = data;
+    })
+  }
+
+  setupStripeForm() {
+    let elements = this.stripe.elements();
+    this.cardFields = elements.create('card', {hidePostalCode: true});
+    this.cardFields.mount('#card-element');
+    this.cardFields.on('change', (event: any) => {
+      this.cardErrors = document.getElementById('card-errors');
+      if (event.complete()) {
+        this.cardErrors.textContent = "";
+      } else {
+        this.cardErrors.textContent = event.error.message;
       }
-    )
+    })
   }
 }
