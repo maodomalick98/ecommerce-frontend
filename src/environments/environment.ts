@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  eCommerceApiBaseUrl: 'https://localhost:8443/api',
+  eCommerceApiBaseUrl: 'http://localhost:80/api',
   stipePublishableKey: 'pk_test_51PhdTIHf5fTyjqIFT6Ik1dM9NDpADAhgNe9brboQPLgs8WTSptC5ut7146C2FIvBJJmJqLG4Fn4GQiiq2WNA6dO800dPdxWjxF'
 };
 
